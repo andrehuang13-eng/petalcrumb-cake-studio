@@ -1,0 +1,118 @@
+// Prisma schema for Petalcrumb Cake Studio
+// Reference: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum CakeStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ============================================================
+// Catalog
+// ============================================================
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  cakes     Cake[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Cake {
+  id             String       @id @default(cuid())
+  title          String
+  slug           String       @unique
+  description    String
+  // Price stored as integer in pence (smallest currency unit) — no floats
+  basePriceCents Int
+  leadTimeDays   Int
+  allergenNotes  String?
+  status         CakeStatus   @default(PUBLISHED)
+  featured       Boolean      @default(false)
+  // Native Postgres text array — simpler than a join table for tag-like data
+  flavors        String[]
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  sizeOptions SizeOption[]
+  images      CakeImage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([status])
+  @@map("cakes")
+}
+
+model SizeOption {
+  id         String @id @default(cuid())
+  cakeId     String
+  cake       Cake   @relation(fields: [cakeId], references: [id], onDelete: Cascade)
+  label      String // e.g. "8-inch round (serves 20)"
+  priceCents Int
+  sortOrder  Int    @default(0)
+
+  @@index([cakeId])
+  @@map("size_options")
+}
+
+model CakeImage {
+  id        String  @id @default(cuid())
+  cakeId    String
+  cake      Cake    @relation(fields: [cakeId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String
+  sortOrder Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  @@index([cakeId])
+  @@map("cake_images")
+}
+
+// ============================================================
+// Editable site content
+// ============================================================
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model SiteSettings {
+  // Singleton table — only one row, fixed ID
+  id           String   @id @default("singleton")
+  email        String
+  phone        String
+  address      String
+  openingHours String
+  instagramUrl String
+  updatedAt    DateTime @updatedAt
+
+  @@map("site_settings")
+}
