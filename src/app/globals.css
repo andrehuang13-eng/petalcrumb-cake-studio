@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* === Brand palette — Editorial Boutique === */
+  --color-cream: #faf6f0;
+  --color-cream-soft: #f4ece0;
+  --color-ink: #1f1a14;
+  --color-ink-soft: #4a4138;
+  --color-ink-mute: #8a8278;
+  --color-rose: #b86f6a;
+  --color-rose-deep: #8e4f4a;
+  --color-sage: #7b8b6f;
+  --color-gold: #b8956a;
+  --color-line: #e5dccd;
+
+  /* === Typography === */
+  --font-display: var(--ff-display), Georgia, "Times New Roman", serif;
+  --font-body: var(--ff-body), system-ui, -apple-system, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-rose);
+  color: var(--color-cream);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-rose);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
