@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex items-center relative overflow-hidden">
-      <div className="mx-auto w-full max-w-7xl px-6 py-24 md:px-12 md:py-32 lg:py-40 relative z-10">
+    <section className="relative overflow-hidden">
+      <div className="mx-auto w-full max-w-7xl px-6 py-20 md:px-12 md:py-32 lg:py-40 relative z-10">
         <div className="grid md:grid-cols-12 gap-y-12 md:gap-x-12 items-center">
           {/* LEFT — typographic composition */}
           <div className="md:col-span-7 lg:col-span-7">
@@ -74,12 +74,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Bottom hint */}
-        <p className="mt-24 md:mt-32 text-xs tracking-[0.2em] uppercase text-ink-mute">
-          ◌ The rest of the studio is being built
-        </p>
       </div>
-    </main>
+    </section>
   );
 }
