@@ -8,8 +8,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Nav grows as M6 adds sections. Kept to live routes only.
-const navItems = [{ href: "/admin", label: "Dashboard" }];
+const navItems = [
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/requests", label: "Requests" },
+  { href: "/admin/cakes", label: "Cakes" },
+  { href: "/admin/categories", label: "Categories" },
+  { href: "/admin/faqs", label: "FAQs" },
+  { href: "/admin/settings", label: "Settings" },
+];
 
 export default async function AdminDashboardLayout({
   children,
