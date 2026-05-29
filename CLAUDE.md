@@ -31,7 +31,7 @@ The user is a coding beginner learning via Claude. Real name: Andre Huang. GitHu
 
 ## Autonomy mode (added 2026-05-28, M4.6)
 
-Andre prefers **high-autonomy** operation. Run each milestone / sub-step end-to-end without pausing for per-step "go?" confirmations. Batch progress reports at milestone completion or at a hard blocker.
+Andre prefers **high-autonomy** operation. Run each milestone / sub-step end-to-end without pausing for per-step "go?" confirmations. When he says "run until done", run **all remaining milestones to completion in one continuous pass** — don't stop at milestone boundaries. He may leave the laptop unattended; keep working on unblocked items and queue any hard blocker rather than halting. Batch progress reports at milestone completion or at a hard blocker.
 
 - Within a chunk, execute don't ask.
 - Use background processes + programmatic verification (curl, CLI tools, scripts) instead of "go run X and tell me what you see".
@@ -55,7 +55,7 @@ Planned additions (later milestones, do NOT add early):
 
 - **M3:** Prisma + PostgreSQL via Neon (cake catalog from DB)
 - **M4:** Resend for transactional email; Zod + React Hook Form
-- **M5:** Auth.js v5 (Credentials provider) + bcrypt
+- **M5:** Admin auth — custom session (jose-signed JWT in an httpOnly cookie) + bcryptjs, credentials login. (Switched from the originally-planned Auth.js v5 to jose, following Next 16's official auth guide; next-auth v5 is still beta and Next 16 renamed middleware→proxy.) Route protection via `src/proxy.ts` (optimistic) + `requireAdmin()` DAL (authoritative).
 - **M6:** Vercel Blob (image uploads); shadcn/ui (admin UI components)
 - **M7:** Polish, accessibility, Lighthouse targets, README, case-study draft
 

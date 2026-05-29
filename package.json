@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:create-admin": "node --env-file=.env prisma/create-admin.mts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -20,6 +21,8 @@
     "@fontsource-variable/manrope": "^5.2.8",
     "@hookform/resolvers": "^5.4.0",
     "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.3",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
