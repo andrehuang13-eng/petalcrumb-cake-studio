@@ -25,11 +25,19 @@ Two distinct languages, kept strictly separate:
 The user is a coding beginner learning via Claude. Real name: Andre Huang. GitHub: `andrehuang13-eng`. Flexible schedule, no hard deadlines.
 
 - Explain every technical term on first use in plain language.
-- One small step at a time; wait for confirmation before the next.
 - For terminal commands: give exact text + what it does + expected output.
-- Don't dump many commands at once.
 - On errors: ask them to paste the message; explain cause + fix calmly.
 - When you have terminal/file tools available (in Claude Code), **run diagnostic/routine commands yourself** rather than asking the user to type them. Reserve "user runs it" for commands needing admin/UAC, account login, or where typing is part of their learning (e.g., first `git push`).
+
+## Autonomy mode (added 2026-05-28, M4.6)
+
+Andre prefers **high-autonomy** operation. Run each milestone / sub-step end-to-end without pausing for per-step "go?" confirmations. Batch progress reports at milestone completion or at a hard blocker.
+
+- Within a chunk, execute don't ask.
+- Use background processes + programmatic verification (curl, CLI tools, scripts) instead of "go run X and tell me what you see".
+- Pause only for: third-party signups (OAuth/ToS), CLI logins, UAC/admin ops, design decisions only the user can make, or explicit "pause/stop/tunggu".
+- Onboarding pattern for future projects: at kickoff, collect all service API keys + target email addresses + confirm CLI logins in one go; then run autonomously.
+- Full pattern in user-level memory: `user_autonomy_preference.md`.
 
 ## Stack
 

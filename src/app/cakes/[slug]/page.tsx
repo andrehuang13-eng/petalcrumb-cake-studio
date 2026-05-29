@@ -157,9 +157,9 @@ export default async function CakeDetailPage({ params }: Props) {
             </div>
           )}
 
-          {/* CTA */}
+          {/* CTA — links to /request-a-cake with this cake pre-filled */}
           <Link
-            href="/contact"
+            href={`/request-a-cake?cake=${cake.slug}`}
             className="group inline-flex items-center justify-center gap-2 bg-ink text-cream px-7 py-4 rounded-full text-sm tracking-wide hover:bg-rose-deep transition-colors duration-300"
           >
             Request this design
@@ -171,7 +171,7 @@ export default async function CakeDetailPage({ params }: Props) {
             </span>
           </Link>
           <p className="text-xs text-ink-mute mt-4">
-            We&apos;ll reply within 24 hours with a personalised quote.
+            We&apos;ll reply within two working days with a tailored quote.
           </p>
         </div>
       </div>

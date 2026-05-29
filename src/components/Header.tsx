@@ -54,7 +54,7 @@ export function Header() {
               </Link>
             ))}
             <Link
-              href="/contact"
+              href="/request-a-cake"
               className="ml-2 inline-flex items-center bg-ink text-cream px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] hover:bg-rose-deep transition-colors"
             >
               Request a cake
@@ -118,7 +118,7 @@ export function Header() {
               </Link>
             ))}
             <Link
-              href="/contact"
+              href="/request-a-cake"
               onClick={() => setMenuOpen(false)}
               className="mt-12 inline-flex items-center gap-2 bg-ink text-cream px-7 py-4 rounded-full text-sm tracking-wide"
             >
