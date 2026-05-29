@@ -15,8 +15,11 @@ export type SubmitResult = { ok: true } | { ok: false; error: string };
  * Flow:
  *   1. Re-validate with Zod (never trust client validation alone).
  *   2. Persist to `order_requests`. This is the source of truth.
- *   3. Fire-and-forget email notification — log on failure but don't block
- *      the success response, because the DB record is already saved.
+ *   3. Await the notification email, then return. We must await it: on a
+ *      serverless host (Vercel) any work not awaited before the response is
+ *      killed when the function freezes, so a fire-and-forget send never
+ *      actually delivers. Email failure does not fail the request — the DB
+ *      record is already saved — so the error is swallowed and logged.
  */
 export async function submitOrderRequest(
   raw: OrderRequestInput,
@@ -51,34 +54,32 @@ export async function submitOrderRequest(
       },
     });
 
-    // Email is best-effort. The DB record is what matters; admin can also
-    // see new requests in the admin dashboard (added in M5/M6).
-    sendOrderRequestEmail({
-      id: created.id,
-      name: created.name,
-      email: created.email,
-      phone: created.phone,
-      eventDate: created.eventDate,
-      servings: created.servings,
-      occasion: created.occasion,
-      description: created.description,
-      allergenNotes: created.allergenNotes,
-      budgetRange: created.budgetRange,
-      referenceCake: created.referenceCake,
-    })
-      .then((result) => {
-        if (!result.sent) {
-          console.warn(
-            `[orderRequest ${created.id}] Email not sent: ${result.reason}`,
-          );
-        }
-      })
-      .catch((err) => {
-        console.error(
-          `[orderRequest ${created.id}] Email send threw:`,
-          err,
-        );
+    // Send the notification email. Awaited (see docstring) so it completes
+    // before the serverless function freezes. Email is best-effort: the DB
+    // record is the source of truth and an admin can also see new requests in
+    // the dashboard (M5/M6), so a send failure is logged, never surfaced.
+    try {
+      const emailResult = await sendOrderRequestEmail({
+        id: created.id,
+        name: created.name,
+        email: created.email,
+        phone: created.phone,
+        eventDate: created.eventDate,
+        servings: created.servings,
+        occasion: created.occasion,
+        description: created.description,
+        allergenNotes: created.allergenNotes,
+        budgetRange: created.budgetRange,
+        referenceCake: created.referenceCake,
       });
+      if (!emailResult.sent) {
+        console.warn(
+          `[orderRequest ${created.id}] Email not sent: ${emailResult.reason}`,
+        );
+      }
+    } catch (err) {
+      console.error(`[orderRequest ${created.id}] Email send threw:`, err);
+    }
 
     return { ok: true };
   } catch (err) {
