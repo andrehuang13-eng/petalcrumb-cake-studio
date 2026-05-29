@@ -1,16 +1,59 @@
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "FAQ",
+  description:
+    "Lead times, delivery area, the custom design process, allergens, deposits, and cancellations.",
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const faqs = await prisma.faq.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+
   return (
-    <PagePlaceholder
-      eyebrow="Answers"
-      title="FAQ"
-      lede="Lead times, delivery area, custom design process, allergens, deposits, and cancellation — the things most people ask before they order."
-      milestone="Coming in M6 — content editable by admin from the dashboard"
-    />
+    <section className="mx-auto max-w-3xl px-6 md:px-12 py-16 md:py-24">
+      <p className="text-xs tracking-[0.3em] uppercase text-rose mb-6">Answers</p>
+      <h1 className="font-display text-5xl md:text-6xl lg:text-7xl leading-[0.95] tracking-[-0.02em] mb-6">
+        Frequently asked
+      </h1>
+      <p className="font-display text-xl md:text-2xl text-ink-soft leading-snug mb-14 max-w-2xl">
+        The things most people ask before they order. Anything else, just{" "}
+        <Link href="/contact" className="text-rose-deep underline underline-offset-4">
+          get in touch
+        </Link>
+        .
+      </p>
+
+      {faqs.length === 0 ? (
+        <p className="text-ink-mute">Questions are being added — check back soon.</p>
+      ) : (
+        <dl className="divide-y divide-line border-t border-line">
+          {faqs.map((f) => (
+            <div key={f.id} className="py-7">
+              <dt className="font-display text-xl md:text-2xl text-ink mb-3">
+                {f.question}
+              </dt>
+              <dd className="text-ink-soft leading-relaxed whitespace-pre-wrap">
+                {f.answer}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      <div className="mt-16 pt-10 border-t border-line">
+        <p className="font-display text-2xl text-ink mb-4">
+          Ready to talk about your cake?
+        </p>
+        <Link
+          href="/request-a-cake"
+          className="inline-flex items-center gap-2 bg-ink text-cream px-7 py-4 rounded-full text-sm tracking-wide hover:bg-rose-deep transition-colors"
+        >
+          Request a cake <span aria-hidden>→</span>
+        </Link>
+      </div>
+    </section>
   );
 }

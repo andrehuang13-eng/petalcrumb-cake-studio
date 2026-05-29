@@ -8,7 +8,7 @@ Concept portfolio project — a fictional boutique cake studio website. Built as
 
 - **Type:** Full-stack lite — customer-facing catalog + order-request form, plus admin dashboard (login-gated CMS).
 - **Ordering model:** Catalog + order-request form. **No** online payment, no shopping cart. Custom cakes get manually quoted.
-- **Status:** Currently in FASE 4 (build), following a phased plan (FASE 1 brief → 2 tech plan → 3 setup → 4 build).
+- **Status:** FASE 4 (build) complete through M7 — public catalogue, order-request flow, admin CMS (auth + CRUD + image uploads), and polish/docs all shipped and deployed. Remaining work is incremental (see CASE-STUDY.md "next steps").
 - **Fictional client:** "Petalcrumb Cake Studio", a boutique bakery in London (UK, GBP). See conversation memory for the full FASE 1 brief.
 
 ## Language rules (strict, ALWAYS apply)
@@ -56,8 +56,8 @@ Planned additions (later milestones, do NOT add early):
 - **M3:** Prisma + PostgreSQL via Neon (cake catalog from DB)
 - **M4:** Resend for transactional email; Zod + React Hook Form
 - **M5:** Admin auth — custom session (jose-signed JWT in an httpOnly cookie) + bcryptjs, credentials login. (Switched from the originally-planned Auth.js v5 to jose, following Next 16's official auth guide; next-auth v5 is still beta and Next 16 renamed middleware→proxy.) Route protection via `src/proxy.ts` (optimistic) + `requireAdmin()` DAL (authoritative).
-- **M6:** Vercel Blob (image uploads); shadcn/ui (admin UI components)
-- **M7:** Polish, accessibility, Lighthouse targets, README, case-study draft
+- **M6:** ✅ Done — admin CMS (cakes/categories/FAQs/settings CRUD + order-requests inbox). Vercel Blob for image uploads. Built with hand-rolled Tailwind components instead of shadcn/ui (Tailwind v4 + existing design system).
+- **M7:** ✅ Done — public pages wired to the CMS (FAQ/contact/footer from DB), error/loading/not-found states, skip-link + sitemap/robots, README + CASE-STUDY.md.
 
 ## Common commands
 

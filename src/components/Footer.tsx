@@ -1,6 +1,11 @@
 import Link from "next/link";
+import { getSiteSettings, instagramHandle } from "@/lib/settings";
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings();
+  const addressLines = settings.address.split(",").map((s) => s.trim());
+  const handle = instagramHandle(settings.instagramUrl);
+
   return (
     <footer className="mt-24 md:mt-32 border-t border-line/50 bg-cream-soft">
       <div className="mx-auto max-w-7xl px-6 md:px-12 py-16 md:py-20">
@@ -19,11 +24,12 @@ export function Footer() {
               Studio
             </h4>
             <address className="text-sm text-ink-soft leading-relaxed not-italic">
-              12 Marlowe Lane
-              <br />
-              Hackney, London E8 3FY
-              <br />
-              <span className="block mt-2">+44 20 7946 0000</span>
+              {addressLines.map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                </span>
+              ))}
+              <span className="block mt-2">{settings.phone}</span>
             </address>
           </div>
 
@@ -33,38 +39,21 @@ export function Footer() {
               Visit
             </h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/gallery"
-                  className="text-ink-soft hover:text-rose-deep transition-colors"
-                >
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-ink-soft hover:text-rose-deep transition-colors"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="text-ink-soft hover:text-rose-deep transition-colors"
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-ink-soft hover:text-rose-deep transition-colors"
-                >
-                  Contact
-                </Link>
-              </li>
+              {[
+                { href: "/gallery", label: "Gallery" },
+                { href: "/about", label: "About" },
+                { href: "/faq", label: "FAQ" },
+                { href: "/contact", label: "Contact" },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-ink-soft hover:text-rose-deep transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -76,22 +65,24 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <a
-                  href="mailto:hello@petalcrumb.studio"
+                  href={`mailto:${settings.email}`}
                   className="text-ink-soft hover:text-rose-deep transition-colors"
                 >
-                  hello@petalcrumb.studio
+                  {settings.email}
                 </a>
               </li>
-              <li>
-                <a
-                  href="https://instagram.com/petalcrumb.studio"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-ink-soft hover:text-rose-deep transition-colors"
-                >
-                  @petalcrumb.studio
-                </a>
-              </li>
+              {handle && (
+                <li>
+                  <a
+                    href={settings.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ink-soft hover:text-rose-deep transition-colors"
+                  >
+                    {handle}
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
         </div>
