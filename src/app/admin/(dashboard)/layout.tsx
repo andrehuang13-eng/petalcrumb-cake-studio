@@ -15,6 +15,7 @@ const navItems = [
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/faqs", label: "FAQs" },
   { href: "/admin/settings", label: "Settings" },
+  { href: "/admin/account", label: "Account" },
 ];
 
 export default async function AdminDashboardLayout({

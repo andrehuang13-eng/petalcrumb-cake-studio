@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -37,6 +37,8 @@ const inputCx =
 
 export function OrderRequestForm({ referenceCake }: Props) {
   const [state, setState] = useState<FormState>({ kind: "idle" });
+  // When the form mounted — used to flag implausibly fast (bot) submissions.
+  const mountedAt = useRef(Date.now());
 
   const {
     register,
@@ -55,7 +57,10 @@ export function OrderRequestForm({ referenceCake }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     setState({ kind: "submitting" });
     try {
-      const result = await submitOrderRequest(data);
+      const result = await submitOrderRequest({
+        ...data,
+        elapsedMs: Date.now() - mountedAt.current,
+      });
       if (result.ok) {
         setState({ kind: "success" });
         // Scroll the success message into view for clarity.
@@ -102,6 +107,24 @@ export function OrderRequestForm({ referenceCake }: Props) {
     <form onSubmit={onSubmit} noValidate className="space-y-12">
       {/* Hidden — passed through from /cakes/[slug] CTA pre-fill. */}
       <input type="hidden" {...register("referenceCakeId")} />
+
+      {/* Honeypot — hidden from people, often auto-filled by bots. Must stay
+          empty; a filled value is silently dropped server-side. Positioned
+          off-screen (not display:none, which some bots skip) + aria-hidden +
+          removed from the tab order. */}
+      <div
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}
+      >
+        <label htmlFor="company">Company (leave blank)</label>
+        <input
+          id="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          {...register("company")}
+        />
+      </div>
 
       {/* === About you === */}
       <Fieldset legend="About you">

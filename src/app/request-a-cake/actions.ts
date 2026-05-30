@@ -6,6 +6,7 @@ import {
   orderRequestSchema,
   type OrderRequestInput,
 } from "@/lib/validators/orderRequest";
+import { rateLimit, clientKey } from "@/lib/rate-limit";
 
 export type SubmitResult = { ok: true } | { ok: false; error: string };
 
@@ -33,6 +34,23 @@ export async function submitOrderRequest(
   }
 
   const data = parsed.data;
+
+  // --- Anti-spam ---
+  // Honeypot filled, or an implausibly fast submit → silently accept so bots
+  // don't learn, but drop it: no DB write, no email.
+  if (data.company && data.company.trim() !== "") return { ok: true };
+  if (typeof data.elapsedMs === "number" && data.elapsedMs < 2500) {
+    return { ok: true };
+  }
+
+  // Best-effort per-IP rate limit: 5 submissions per 10 minutes.
+  if (!rateLimit(await clientKey("order"), 5, 10 * 60_000)) {
+    return {
+      ok: false,
+      error:
+        "You've sent several requests recently — please try again in a little while.",
+    };
+  }
 
   try {
     const created = await prisma.orderRequest.create({
