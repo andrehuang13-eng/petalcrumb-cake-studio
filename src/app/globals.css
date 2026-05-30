@@ -52,3 +52,76 @@ h1, h2, h3, h4, h5, h6 {
   outline-offset: 3px;
   border-radius: 2px;
 }
+
+/* ============================================================
+   Motion layer — progressive enhancement
+   Content is visible by default (no-JS safe). Animations only
+   engage once <html> has the `js` class (set before paint).
+   ============================================================ */
+
+.reveal {
+  opacity: 1;
+}
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+html.js .reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes kf-rise {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+html.js .rise-in {
+  animation: kf-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes kf-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee {
+  overflow: hidden;
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: kf-marquee 38s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  html.js .rise-in {
+    animation: none !important;
+  }
+  .marquee-track {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
