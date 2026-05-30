@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { PageTransition } from "@/components/PageTransition";
+import { PublicChromeGate } from "@/components/PublicChromeGate";
 import { getTheme } from "@/lib/theme";
 
 const SITE_URL = "https://petalcrumb-cake-studio.vercel.app";
@@ -72,7 +73,9 @@ export default async function RootLayout({
         <main id="main" className="flex-1">
           <PageTransition>{children}</PageTransition>
         </main>
-        <Footer />
+        <PublicChromeGate>
+          <Footer />
+        </PublicChromeGate>
         <Analytics />
         <SpeedInsights />
       </body>

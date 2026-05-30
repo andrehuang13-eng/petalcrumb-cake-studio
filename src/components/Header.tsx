@@ -16,6 +16,7 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -35,6 +36,11 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Admin routes have their own chrome — the public site header would
+  // double up and mix customer CTAs into the back-office UI. Early-return
+  // is AFTER all hooks to satisfy the rules of hooks.
+  if (isAdmin) return null;
 
   return (
     <>
