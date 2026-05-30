@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { href: "/gallery", label: "Gallery" },
@@ -78,28 +79,32 @@ export function Header() {
                 />
               </Link>
             ))}
+            <ThemeToggle />
             <Link
               href="/request-a-cake"
-              className="ml-2 inline-flex items-center bg-ink text-cream px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] hover:bg-rose-deep transition-colors"
+              className="inline-flex items-center bg-ink text-cream px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] hover:bg-rose-deep transition-colors"
             >
               Request a cake
             </Link>
           </nav>
 
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            className="md:hidden flex items-center justify-center w-10 h-10 -mr-2 text-ink"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={menuOpen}
-          >
-            <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden>
-              <line x1="0" y1="1" x2="20" y2="1" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="0" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="0" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-          </button>
+          {/* Mobile actions — theme toggle + hamburger */}
+          <div className="md:hidden flex items-center gap-1 -mr-2">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="flex items-center justify-center w-10 h-10 text-ink"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+            >
+              <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden>
+                <line x1="0" y1="1" x2="20" y2="1" stroke="currentColor" strokeWidth="1.5" />
+                <line x1="0" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.5" />
+                <line x1="0" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 

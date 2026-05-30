@@ -4,6 +4,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { PageTransition } from "@/components/PageTransition";
+import { getTheme } from "@/lib/theme";
 
 const SITE_URL = "https://petalcrumb-cake-studio.vercel.app";
 const DESCRIPTION =
@@ -31,13 +33,34 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// Pre-paint script: (1) flips on the `js` class to enable the motion layer;
+// (2) when no theme cookie is set, picks the user's system preference so dark
+// fans don't get a flash of light. When a cookie IS set, the server already
+// applied `.dark` correctly — we just leave it.
+const NO_FOUC_SCRIPT = `(function(){
+  var d=document.documentElement; d.classList.add('js');
+  try {
+    var m=document.cookie.match(/(?:^|; )petalcrumb_theme=([^;]+)/);
+    if(!m && window.matchMedia('(prefers-color-scheme: dark)').matches){
+      d.classList.add('dark');
+    }
+  } catch(e){}
+})();`;
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await getTheme();
+  const htmlClass =
+    "h-full antialiased" + (theme === "dark" ? " dark" : "");
+
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={htmlClass} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: NO_FOUC_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col bg-cream text-ink">
         <a
           href="#main"
@@ -47,7 +70,7 @@ export default function RootLayout({
         </a>
         <Header />
         <main id="main" className="flex-1">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
         <Analytics />

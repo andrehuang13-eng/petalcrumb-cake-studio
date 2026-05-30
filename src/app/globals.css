@@ -3,8 +3,16 @@
 @import "@fontsource-variable/manrope";
 @import "tailwindcss";
 
+/* Enable class-based dark variant for Tailwind v4 — `dark:` matches when
+   <html class="dark"> (or any ancestor) is present. We rarely need it because
+   the colour tokens below auto-swap, but it's useful for the few cases that
+   must differ structurally between modes. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* === Brand palette — Editorial Boutique === */
+  /* === Brand palette — Editorial Boutique (light mode) ===
+     Components reference these tokens (bg-cream, text-ink, …); dark mode
+     swaps the *values* below without touching any class names. */
   --color-cream: #faf6f0;
   --color-cream-soft: #f4ece0;
   --color-ink: #1f1a14;
@@ -21,8 +29,27 @@
   --font-body: "Manrope Variable", system-ui, -apple-system, sans-serif;
 }
 
+/* === Dark mode — "Editorial Boutique by candlelight" ===
+   Same brand language, warmer + dimmer. We override the *same* token names so
+   every `bg-cream` / `text-ink` / `border-line` instance updates with zero
+   markup churn. Rose stays the accent. */
+html.dark {
+  --color-cream: #15110d;
+  --color-cream-soft: #1f1a14;
+  --color-ink: #f0e8d6;
+  --color-ink-soft: #c5bba8;
+  --color-ink-mute: #8a8278;
+  --color-rose: #d18b86;
+  --color-rose-deep: #b86f6a;
+  --color-sage: #9aaa8e;
+  --color-gold: #d4a980;
+  --color-line: #3a3429;
+  color-scheme: dark;
+}
+
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
 }
 
 body {
@@ -32,6 +59,9 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -109,6 +139,23 @@ html.js .rise-in {
   animation-play-state: paused;
 }
 
+/* Page transition — runs every time the keyed wrapper remounts on route
+   change. Subtle: fade + 8px slide. The keyframe is JS-gated so SSR + no-JS
+   visits show content immediately. */
+@keyframes kf-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+html.js .page-transition {
+  animation: kf-page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html.js .reveal {
     opacity: 1 !important;
@@ -118,10 +165,16 @@ html.js .rise-in {
   html.js .rise-in {
     animation: none !important;
   }
+  html.js .page-transition {
+    animation: none !important;
+  }
   .marquee-track {
     animation: none !important;
   }
   html {
     scroll-behavior: auto;
+  }
+  body {
+    transition: none !important;
   }
 }

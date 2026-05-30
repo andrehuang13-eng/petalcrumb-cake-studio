@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -38,7 +38,13 @@ const inputCx =
 export function OrderRequestForm({ referenceCake }: Props) {
   const [state, setState] = useState<FormState>({ kind: "idle" });
   // When the form mounted — used to flag implausibly fast (bot) submissions.
-  const mountedAt = useRef(Date.now());
+  // Set in an effect (not the initializer) because Date.now() is impure;
+  // also ensures the timer starts client-side after hydration, not on the
+  // server's render clock.
+  const mountedAt = useRef<number | null>(null);
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
 
   const {
     register,
@@ -54,13 +60,16 @@ export function OrderRequestForm({ referenceCake }: Props) {
     mode: "onTouched",
   });
 
+  // The closure below reads `mountedAt.current`. That happens only at submit
+  // time (event handler), never during render, so the ref-during-render lint
+  // is a false positive here.
+  // eslint-disable-next-line react-hooks/refs
   const onSubmit = handleSubmit(async (data) => {
     setState({ kind: "submitting" });
     try {
-      const result = await submitOrderRequest({
-        ...data,
-        elapsedMs: Date.now() - mountedAt.current,
-      });
+      // eslint-disable-next-line react-hooks/purity
+      const elapsedMs = mountedAt.current ? Date.now() - mountedAt.current : 0;
+      const result = await submitOrderRequest({ ...data, elapsedMs });
       if (result.ok) {
         setState({ kind: "success" });
         // Scroll the success message into view for clarity.
