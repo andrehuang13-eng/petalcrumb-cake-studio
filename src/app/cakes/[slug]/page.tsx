@@ -2,10 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { Reveal } from "@/components/Reveal";
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
@@ -14,15 +13,10 @@ export async function generateMetadata({ params }: Props) {
     select: { title: true, description: true },
   });
   if (!cake) return { title: "Not Found" };
-  return {
-    title: cake.title,
-    description: cake.description.slice(0, 160),
-  };
+  return { title: cake.title, description: cake.description.slice(0, 160) };
 }
 
-function formatPrice(cents: number) {
-  return `£${Math.round(cents / 100)}`;
-}
+const formatPrice = (cents: number) => `£${Math.round(cents / 100)}`;
 
 export default async function CakeDetailPage({ params }: Props) {
   const { slug } = await params;
@@ -36,33 +30,28 @@ export default async function CakeDetailPage({ params }: Props) {
     },
   });
 
-  if (!cake || cake.status === "ARCHIVED") {
-    notFound();
-  }
+  if (!cake || cake.status === "ARCHIVED") notFound();
 
-  const primaryImage = cake.images[0];
+  const primary = cake.images[0];
+  const extra = cake.images.slice(1);
 
   return (
     <article className="mx-auto max-w-7xl px-6 md:px-12 py-12 md:py-20">
-      {/* Back link */}
       <Link
         href="/gallery"
         className="inline-flex items-center text-xs uppercase tracking-[0.2em] text-ink-soft hover:text-rose-deep transition-colors mb-8"
       >
-        <span className="mr-2" aria-hidden>
-          ←
-        </span>
-        Back to gallery
+        <span className="mr-2" aria-hidden>←</span> Back to gallery
       </Link>
 
       <div className="grid md:grid-cols-2 gap-10 md:gap-16">
-        {/* Image */}
+        {/* Image column */}
         <div className="md:sticky md:top-24 md:self-start">
-          {primaryImage ? (
-            <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-cream-soft">
+          {primary ? (
+            <div className="rise-in relative aspect-[4/5] overflow-hidden rounded-2xl bg-cream-soft shadow-[0_40px_80px_-44px_rgba(31,26,20,0.5)]">
               <Image
-                src={primaryImage.url}
-                alt={primaryImage.altText}
+                src={primary.url}
+                alt={primary.altText}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -70,110 +59,92 @@ export default async function CakeDetailPage({ params }: Props) {
               />
             </div>
           ) : (
-            <div className="aspect-[4/5] rounded-lg bg-cream-soft flex items-center justify-center text-xs uppercase tracking-[0.2em] text-ink-mute">
+            <div className="aspect-[4/5] rounded-2xl bg-cream-soft grid place-items-center text-xs uppercase tracking-[0.2em] text-ink-mute">
               No image yet
+            </div>
+          )}
+
+          {extra.length > 0 && (
+            <div className="mt-4 grid grid-cols-4 gap-3">
+              {extra.slice(0, 4).map((img) => (
+                <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg bg-cream-soft">
+                  <Image src={img.url} alt={img.altText} fill className="object-cover" sizes="120px" />
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* Detail */}
-        <div className="md:pt-4">
+        {/* Detail column */}
+        <Reveal className="md:pt-4">
           <p className="text-xs tracking-[0.3em] uppercase text-rose mb-6">
             {cake.category.name}
           </p>
-          <h1 className="font-display text-5xl md:text-6xl leading-[0.95] tracking-[-0.02em] mb-8">
+          <h1 className="font-display leading-[0.95] tracking-[-0.02em] text-balance text-[clamp(2.5rem,5vw,4rem)] mb-8">
             {cake.title}
           </h1>
           <p className="text-lg text-ink-soft leading-relaxed mb-12 max-w-prose">
             {cake.description}
           </p>
 
-          {/* Quick info — From + Lead time */}
-          <dl className="grid grid-cols-2 gap-y-6 gap-x-8 mb-12 pb-12 border-b border-line/50">
+          <dl className="grid grid-cols-2 gap-y-6 gap-x-8 mb-12 pb-12 border-b border-line/60">
             <div>
-              <dt className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-2">
-                From
-              </dt>
-              <dd className="font-display text-3xl tracking-tight">
-                {formatPrice(cake.basePriceCents)}
-              </dd>
+              <dt className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-2">From</dt>
+              <dd className="font-display text-3xl tracking-tight">{formatPrice(cake.basePriceCents)}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-2">
-                Lead time
-              </dt>
+              <dt className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-2">Lead time</dt>
               <dd className="font-display text-3xl tracking-tight">
                 {cake.leadTimeDays} <span className="text-base">days</span>
               </dd>
             </div>
           </dl>
 
-          {/* Sizes */}
-          <div className="mb-10">
-            <h3 className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-4">
-              Sizes
-            </h3>
-            <ul className="space-y-3">
-              {cake.sizeOptions.map((s) => (
-                <li
-                  key={s.id}
-                  className="flex items-baseline justify-between border-b border-line/40 pb-3"
-                >
-                  <span className="text-base text-ink">{s.label}</span>
-                  <span className="font-display text-xl">
-                    {formatPrice(s.priceCents)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Flavours */}
-          <div className="mb-10">
-            <h3 className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-4">
-              Flavours
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {cake.flavors.map((f) => (
-                <span
-                  key={f}
-                  className="text-sm px-4 py-1.5 border border-line rounded-full text-ink-soft"
-                >
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Allergens */}
-          {cake.allergenNotes && (
-            <div className="mb-12">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-4">
-                Allergens
-              </h3>
-              <p className="text-sm text-ink-soft leading-relaxed max-w-prose">
-                {cake.allergenNotes}
-              </p>
+          {cake.sizeOptions.length > 0 && (
+            <div className="mb-10">
+              <h2 className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-4">Sizes</h2>
+              <ul className="space-y-3">
+                {cake.sizeOptions.map((s) => (
+                  <li key={s.id} className="flex items-baseline justify-between border-b border-line/40 pb-3">
+                    <span className="text-base text-ink">{s.label}</span>
+                    <span className="font-display text-xl">{formatPrice(s.priceCents)}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
-          {/* CTA — links to /request-a-cake with this cake pre-filled */}
+          {cake.flavors.length > 0 && (
+            <div className="mb-10">
+              <h2 className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-4">Flavours</h2>
+              <div className="flex flex-wrap gap-2">
+                {cake.flavors.map((f) => (
+                  <span key={f} className="text-sm px-4 py-1.5 border border-line rounded-full text-ink-soft">
+                    {f}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {cake.allergenNotes && (
+            <div className="mb-12">
+              <h2 className="text-xs uppercase tracking-[0.2em] text-ink-mute mb-4">Allergens</h2>
+              <p className="text-sm text-ink-soft leading-relaxed max-w-prose">{cake.allergenNotes}</p>
+            </div>
+          )}
+
           <Link
             href={`/request-a-cake?cake=${cake.slug}`}
             className="group inline-flex items-center justify-center gap-2 bg-ink text-cream px-7 py-4 rounded-full text-sm tracking-wide hover:bg-rose-deep transition-colors duration-300"
           >
             Request this design
-            <span
-              aria-hidden
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            >
-              →
-            </span>
+            <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
           </Link>
           <p className="text-xs text-ink-mute mt-4">
             We&apos;ll reply within two working days with a tailored quote.
           </p>
-        </div>
+        </Reveal>
       </div>
     </article>
   );

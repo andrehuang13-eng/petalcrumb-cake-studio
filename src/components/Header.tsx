@@ -13,12 +13,13 @@ const navItems = [
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll when the mobile menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -26,10 +27,28 @@ export function Header() {
     };
   }, [menuOpen]);
 
+  // Condense the header once the page is scrolled
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
-      <header className="sticky top-0 z-40 backdrop-blur-sm bg-cream/85 border-b border-line/50">
-        <div className="mx-auto max-w-7xl px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
+      <header
+        className={`sticky top-0 z-40 backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-300 ${
+          scrolled
+            ? "bg-cream/90 border-b border-line shadow-[0_1px_20px_-12px_rgba(31,26,20,0.4)]"
+            : "bg-cream/70 border-b border-line/30"
+        }`}
+      >
+        <div
+          className={`mx-auto max-w-7xl px-6 md:px-12 flex items-center justify-between transition-[height] duration-300 ${
+            scrolled ? "h-14 md:h-16" : "h-16 md:h-20"
+          }`}
+        >
           {/* Brand wordmark */}
           <Link
             href="/"
@@ -44,13 +63,19 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-xs uppercase tracking-[0.2em] transition-colors ${
+                className={`group relative text-xs uppercase tracking-[0.2em] transition-colors ${
                   isActive(item.href)
                     ? "text-ink"
                     : "text-ink-soft hover:text-rose-deep"
                 }`}
               >
                 {item.label}
+                {/* animated underline */}
+                <span
+                  className={`absolute -bottom-1.5 left-0 h-px bg-rose-deep transition-all duration-300 ${
+                    isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
               </Link>
             ))}
             <Link
