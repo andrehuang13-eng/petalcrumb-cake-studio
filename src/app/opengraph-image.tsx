@@ -56,7 +56,9 @@ export default function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex" }}>petalcrumb-cake-studio.vercel.app</div>
-          <div style={{ display: "flex", color: "#b86f6a", fontSize: 56 }}>✦</div>
+          <div style={{ display: "flex", color: "#b86f6a", fontSize: 40, letterSpacing: 6 }}>
+            ***
+          </div>
         </div>
       </div>
     ),
