@@ -1,48 +1,62 @@
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = {
-  cake: {
-    slug: string;
-    title: string;
-    basePriceCents: number;
-    leadTimeDays: number;
-    category: { name: string };
-    images: { url: string; altText: string }[];
-  };
+type CakeCardData = {
+  slug: string;
+  title: string;
+  basePriceCents: number;
+  category: { name: string };
+  images: { url: string; altText: string }[];
 };
 
-export function CakeCard({ cake }: Props) {
-  const image = cake.images[0];
-  const price = `£${Math.round(cake.basePriceCents / 100)}`;
+const price = (cents: number) => `£${Math.round(cents / 100)}`;
+
+export function CakeCard({
+  cake,
+  priority = false,
+}: {
+  cake: CakeCardData;
+  priority?: boolean;
+}) {
+  const img = cake.images[0];
 
   return (
     <Link href={`/cakes/${cake.slug}`} className="group block">
-      <div className="relative aspect-square overflow-hidden rounded-lg bg-cream-soft mb-5">
-        {image ? (
+      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-cream-soft">
+        {img ? (
           <Image
-            src={image.url}
-            alt={image.altText}
+            src={img.url}
+            alt={img.altText}
             fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
+            className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-[0.2em] text-ink-mute">
+          <div className="absolute inset-0 grid place-items-center text-xs uppercase tracking-[0.2em] text-ink-mute">
             No image
           </div>
         )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-ink/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <span className="absolute left-4 bottom-4 inline-flex items-center gap-1.5 text-cream text-xs uppercase tracking-[0.2em] translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+          View design <span aria-hidden>→</span>
+        </span>
       </div>
-      <p className="text-xs uppercase tracking-[0.25em] text-rose mb-2">
-        {cake.category.name}
-      </p>
-      <h3 className="font-display text-2xl md:text-3xl tracking-tight mb-2 group-hover:text-rose-deep transition-colors">
-        {cake.title}
-      </h3>
-      <p className="text-sm text-ink-soft">
-        From {price}{" "}
-        <span className="text-ink-mute">· {cake.leadTimeDays} days lead</span>
-      </p>
+
+      <div className="mt-4 flex items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] tracking-[0.25em] uppercase text-rose mb-1">
+            {cake.category.name}
+          </p>
+          <h3 className="font-display text-xl leading-tight text-ink group-hover:text-rose-deep transition-colors truncate">
+            {cake.title}
+          </h3>
+        </div>
+        <p className="font-display text-lg text-ink-soft shrink-0">
+          {price(cake.basePriceCents)}
+        </p>
+      </div>
     </Link>
   );
 }
