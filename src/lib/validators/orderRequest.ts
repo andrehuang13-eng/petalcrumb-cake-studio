@@ -95,6 +95,12 @@ export const orderRequestSchema = z.object({
 
   // Pre-filled from /cakes/[slug] CTA; not user-editable.
   referenceCakeId: z.string().optional(),
+
+  // --- Anti-spam (not real fields) ---
+  // Honeypot: hidden from humans; bots tend to fill it. Must stay empty.
+  company: z.string().optional(),
+  // Ms the form was on screen before submit; instant submits look automated.
+  elapsedMs: z.coerce.number().optional(),
 });
 
 export type OrderRequestInput = z.infer<typeof orderRequestSchema>;
