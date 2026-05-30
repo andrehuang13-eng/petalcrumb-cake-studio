@@ -41,8 +41,11 @@ Highlights
 • PostgreSQL + Prisma; transactional email (Resend); image uploads (Vercel Blob)
 • Custom session auth (JWT in httpOnly cookie + bcrypt) — no heavyweight library
 • Zod validation shared between client and server
-• Editorial design system, responsive, accessible (skip links, reduced-motion),
-  SEO (dynamic OG images, sitemap/robots), analytics
+• Editorial design system with light + dark mode (CSS-variable token swap,
+  zero markup churn), subtle page transitions, motion-aware reveals
+• Responsive, accessible (skip links, prefers-reduced-motion), SEO (dynamic
+  OG images, sitemap/robots), Vercel Analytics + Speed Insights
+• Anti-spam (honeypot + timing) and per-IP rate limits on public + admin forms
 • Deployed on Vercel with CI auto-deploy
 
 Note: Petalcrumb is a fictional brand created for this case study.
@@ -81,6 +84,7 @@ What you get:
 • A custom admin panel to manage your content (products, pages, enquiries…)
 • Database + contact/enquiry forms wired to email
 • Image uploads, SEO basics, and deployment to a live URL
+• Optional dark mode, page transitions, and other modern touches
 
 See a complete example I built end-to-end (concept project):
 petalcrumb-cake-studio.vercel.app — a boutique cake studio with a public
